@@ -6,7 +6,7 @@ Speakly test task
 
 ## Live Demo
 
-[View Live on Netlify](https://your-live-demo-link.netlify.app)
+[View Live on Netlify](https://magnificent-melba-aacc02.netlify.app/)
 
 ---
 
@@ -52,6 +52,7 @@ Didn't do:
 Only model you need is users model, that has all the FE user attributes as fields.
 
 class LeaderboardUser(models.Model):
+
 - user_name = models.CharField(max_length=100, unique=True)
 - score = models.IntegerField(default=0)
 - rank = models.IntegerField(default=0)
