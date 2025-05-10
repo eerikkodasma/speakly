@@ -101,7 +101,7 @@ const names = [
   "Jackson",
 ];
 
-export function generateNames(maxNum) {
+export function generateNames(maxNum: number) {
   let users = [];
   let totalUsers = 0;
   outerLoop: for (let nameIndex = 0; nameIndex <= names.length; nameIndex++) {

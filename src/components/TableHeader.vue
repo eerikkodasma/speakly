@@ -22,8 +22,9 @@
   </th>
 </template>
 
-<script setup>
-import { TableHeaderTitle } from "@/utils/table.js";
+<script setup lang="ts">
+import { PropType } from "vue";
+import { TableHeaderTitle } from "../types/Table";
 
 const props = defineProps({
   header: {
@@ -31,7 +32,7 @@ const props = defineProps({
     required: true,
   },
   sortAsc: {
-    type: [Boolean, null],
+    type: [Boolean, null] as PropType<boolean | null>,
     default: null,
   },
   hasSorting: {

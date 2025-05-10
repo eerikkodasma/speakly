@@ -6,7 +6,7 @@
         type="text"
         placeholder="Filter by username"
         class="px-1 border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-gray-700"
-        @input="(e) => debounceSeachQuery(e.target.value)"
+        @input="(e) => debounceSeachQuery(e.target?.value || '')"
       />
       <select
         v-model="maxNumUsers"
@@ -68,16 +68,17 @@
   </div>
 </template>
 
-<script setup>
-import TableRow from "@/components/TableRow.vue";
-import TableHeader from "@/components/TableHeader.vue";
-import { TableHeaderTitle } from "@/utils/table.js";
-import { generateNames } from "@/utils/nameGenerator.js";
-import { ref, watch, onMounted, onBeforeUnmount, computed } from "vue";
+<script setup lang="ts">
+import TableRow from "./components/TableRow.vue";
+import TableHeader from "./components/TableHeader.vue";
+import { TableHeaderTitle } from "./types/Table";
+import { generateNames } from "./utils/nameGenerator";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import type { User } from "./types/User";
 
 /* Initialization */
-const initialUsers = ref([]);
-const maxNumUsers = ref(100);
+const initialUsers = ref<User[]>([]);
+const maxNumUsers = ref<number>(100);
 const displayedUsers = computed(() => {
   let userList = [...initialUsers.value];
   if (searchQuery.value) {
@@ -109,10 +110,10 @@ function initializeUsers() {
 }
 
 /* Sorting based on score and username */
-const sortKey = ref(TableHeaderTitle.SCORE);
-const sortAsc = ref(false);
+const sortKey = ref<TableHeaderTitle>(TableHeaderTitle.SCORE);
+const sortAsc = ref<boolean>(false);
 
-function changeTableSorting(key) {
+function changeTableSorting(key: TableHeaderTitle): void {
   if (sortKey.value === key) {
     sortAsc.value = !sortAsc.value;
   } else {
@@ -121,7 +122,11 @@ function changeTableSorting(key) {
   }
 }
 
-function changeSortBy(userList, sortByKey, sortAsc) {
+function changeSortBy(
+  userList: User[],
+  sortByKey: string,
+  sortAsc: boolean
+): User[] {
   if (sortByKey === TableHeaderTitle.SCORE) {
     // Firstly sort by score. If the scores equal the same, then sort by username
     return userList.sort((a, b) => {
@@ -137,10 +142,11 @@ function changeSortBy(userList, sortByKey, sortAsc) {
         : b.userName.localeCompare(a.userName);
     });
   }
+  return userList;
 }
 
 /* Score handling logic */
-function changeScore(id, points) {
+function changeScore(id: number, points: number): void {
   const user = initialUsers.value.find((user) => user.id === id);
   if (user) {
     user.score = Math.max(0, user.score + points);
@@ -149,7 +155,7 @@ function changeScore(id, points) {
   }
 }
 
-function applyRankings(usersList, inititalApply = false) {
+function applyRankings(usersList: User[], inititalApply = false): User[] {
   if (usersList.length) {
     usersList = changeSortBy(usersList, TableHeaderTitle.SCORE, false);
     let newRank = 1;
@@ -172,13 +178,13 @@ function applyRankings(usersList, inititalApply = false) {
 }
 
 /* Automatic score update logic */
-const autoScoreTimer = ref();
+const autoScoreTimer = ref<number | null>(null);
 
 onBeforeUnmount(() => {
   autoScoreTimer.value = null;
 });
 
-function addRandomScores() {
+function addRandomScores(): void {
   initialUsers.value.map((user) => (user.pointsGained = 0));
 
   // Randomly change scores for 10 users
@@ -195,11 +201,13 @@ function addRandomScores() {
 }
 
 /* Filtering based on search query */
-const searchQuery = ref("");
-let debounceTimeout = null;
+const searchQuery = ref<string>("");
+let debounceTimeout: number | null = null;
 
-function debounceSeachQuery(queryValue) {
-  clearTimeout(debounceTimeout);
+function debounceSeachQuery(queryValue: string): void {
+  if (debounceTimeout !== null) {
+    clearTimeout(debounceTimeout);
+  }
   debounceTimeout = setTimeout(() => {
     searchQuery.value = queryValue;
   }, 500);
