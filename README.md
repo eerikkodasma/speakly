@@ -1,6 +1,6 @@
 # Dynamic Leaderboard
 
-Speakly test task
+Speakly test task. Challenge was to complete as much as possible in just one day.
 
 ---
 
